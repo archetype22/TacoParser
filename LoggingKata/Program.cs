@@ -2,6 +2,7 @@
 using System.Linq;
 using System.IO;
 using GeoCoordinatePortable;
+using System.Reflection.Emit;
 
 namespace LoggingKata
 {
@@ -15,19 +16,12 @@ namespace LoggingKata
             // TODO:  Find the two Taco Bells that are the furthest from one another.
             // HINT:  You'll need two nested forloops ---------------------------
 
-            logger.LogInfo("Log initialized");
-
             // use File.ReadAllLines(path) to grab all the lines from your csv file
             // Log and error if you get 0 lines and a warning if you get 1 line
-            var lines = File.ReadAllLines(csvPath);
-
-            logger.LogInfo($"Lines: {lines[0]}");
 
             // Create a new instance of your TacoParser class
-            var parser = new TacoParser();
 
             // Grab an IEnumerable of locations using the Select command: var locations = lines.Select(parser.Parse);
-            var locations = lines.Select(parser.Parse).ToArray();
 
             // DON'T FORGET TO LOG YOUR STEPS
 
@@ -52,8 +46,54 @@ namespace LoggingKata
 
             // Once you've looped through everything, you've found the two Taco Bells farthest away from each other.
 
+            //logger.LogInfo("Log initialized");
 
+            var lines = File.ReadAllLines(csvPath);
+
+            //logger.LogInfo($"Lines: {lines[0]}");
+
+            var parser = new TacoParser();
+
+            var locations = lines.Select(parser.Parse).ToArray();
+
+            ITrackable pointA = null;
+            ITrackable pointB = null;
+            ITrackable tacoBell_A = null;
+            ITrackable tacoBell_B = null;
+            double furthestDistance = 0;
+            double distance = 0;
+            double miles = 0;
             
+
+            for (int i = 0; i < locations.Length; i++)
+            {
+                tacoBell_A = locations[i];
+                double latitudeA = tacoBell_A.Location.Latitude;
+                double longitudeA = tacoBell_A.Location.Longitude;
+                var corA = new GeoCoordinate(latitudeA, longitudeA);
+                for (int j = 0; j < locations.Length; j++)
+                {
+                    tacoBell_B = locations[j];
+                    double latitudeB = tacoBell_B.Location.Latitude;
+                    double longitudeB = tacoBell_B.Location.Longitude;
+                    var corB = new GeoCoordinate(latitudeB, longitudeB);
+                    distance = corA.GetDistanceTo(corB);
+                    if (furthestDistance < distance)
+                    {
+                        pointA = tacoBell_A;
+                        pointB = tacoBell_B;
+                        furthestDistance = distance;
+                    }                                                       
+
+                }
+
+            }
+            miles = DataConversion.ConvertMetersToMiles(furthestDistance);
+            Console.WriteLine($"{pointA.Name.Replace("TacoBell", ", ")}" +
+                              $"and {pointB.Name.Replace("TacoBell", ", ")}" +
+                              $"are the furthest away from each other at {furthestDistance} meters or {miles} miles.");
+           
+           
         }
     }
 }
