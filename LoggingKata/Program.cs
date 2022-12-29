@@ -89,9 +89,8 @@ namespace LoggingKata
 
             }
             miles = DataConversion.ConvertMetersToMiles(furthestDistance);
-            Console.WriteLine($"{pointA.Name.Replace("TacoBell", ", ")}" +
-                              $"and {pointB.Name.Replace("TacoBell", ", ")}" +
-                              $"are the furthest away from each other at {Math.Round(furthestDistance, 2)} meters or {Math.Round(miles, 2)} miles apart.");
+            Console.WriteLine($"{pointA.Name} and {pointB.Name} are the furthest away from " +
+                $"each other at {Math.Round(furthestDistance, 2)} meters or {Math.Round(miles, 2)} miles apart.");
            
            
         }
